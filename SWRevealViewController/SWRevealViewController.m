@@ -762,7 +762,7 @@ const int FrontViewPositionNone = 0xff;
 }
 
 
-- (NSUInteger)supportedInterfaceOrientations
+- (UIInterfaceOrientationMask)supportedInterfaceOrientations
 {
     // we could have simply not implemented this, but we choose to call super to make explicit that we
     // want the default behavior.
@@ -842,7 +842,28 @@ const int FrontViewPositionNone = 0xff;
 {
     FrontViewPosition toggledFrontViewPosition = FrontViewPositionLeft;
     if (_frontViewPosition <= FrontViewPositionLeft)
+    {
         toggledFrontViewPosition = FrontViewPositionRight;
+        
+        //Add overlay if requested
+        if (_shouldUseFrontViewOverlay) {
+            //Create
+            if (!_frontOverlayView) {
+                _frontOverlayView = [[UIView alloc] initWithFrame:self.frontViewController.view.bounds];
+                _frontOverlayView.backgroundColor = [UIColor clearColor];
+                UIButton * overlayButton = [[UIButton alloc] initWithFrame:_frontOverlayView.bounds];
+                [overlayButton addTarget:self action:@selector(revealToggle:) forControlEvents:UIControlEventTouchUpInside];
+                [_frontOverlayView addSubview:overlayButton];
+            }
+            [self.frontViewController.view addSubview:_frontOverlayView];
+        }
+    }
+    else
+    {
+        if ([[_frontViewController.view subviews] containsObject:_frontOverlayView]) {
+            [_frontOverlayView removeFromSuperview];
+        }
+    }
     
     [self setFrontViewPosition:toggledFrontViewPosition animated:animated];
 }
@@ -866,6 +887,13 @@ const int FrontViewPositionNone = 0xff;
 
 - (void)setFrontViewPosition:(FrontViewPosition)frontViewPosition animated:(BOOL)animated
 {
+    if (!(_frontViewPosition <= FrontViewPositionLeft))
+    {
+        if ([[_frontViewController.view subviews] containsObject:_frontOverlayView]) {
+            [_frontOverlayView removeFromSuperview];
+        }
+    }
+    
     if ( ![self isViewLoaded] )
     {
         _frontViewPosition = frontViewPosition;

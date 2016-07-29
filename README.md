@@ -3,6 +3,17 @@
 A UIViewController subclass for revealing a rear (left and/or right) view controller behind a front controller, inspired by the Facebook app, done right!
 
 
+## Modification by Davis Chung
+
+Just set YES to property shouldUseFrontViewOverlay to the instance of SWRevealViewController.
+
+* Support sliding animation when tapping on OverlayView
+* Support removal of OverlayView when calling [setFrontViewPosition:animated:]
+* Disable dimming of OverlayView
+
+Modified from https://github.com/NSRover/SWRevealViewController
+
+
 ## NOTE ( Version 2.3)
 
 * This version fixes an old bug that caused an incorrect initialization of the class on particular scenarios.
